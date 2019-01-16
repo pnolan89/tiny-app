@@ -8,7 +8,7 @@
   <% include ./partials/_header %>
   <pre>
     <p>Short URL: <%= shortURL %></p>
-    <p>Long URL: <%= longURL %></p>
+    <p>Long URL: <a href = "/u/<%= shortURL %>"><%= longURL %></a></p>
   </pre>
   <form method="post" action="/urls/<%= shortURL %>">
     <input id="new-url" type="text" name="url">

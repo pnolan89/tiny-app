@@ -7,6 +7,7 @@
 <body>
   <% include ./partials/_header %>
   <pre>
+    <h2><a href="/urls/new">Create A New Link!</a></h2>
     <% for (var header in urls) { %>
       <% let action = "/urls/" + header + "/delete" %>
       <p>
@@ -17,7 +18,6 @@
         <a href="/urls/<%= header %>"><button>Edit</button></a>
       </p>
     <% } %>
-    <h2><a href="/urls/new">Create A New Link!</a></h2>
  </pre>
 </body>
 </html>
