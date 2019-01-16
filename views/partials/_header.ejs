@@ -1,1 +1,13 @@
-<h1>TinyApp</h1>
+<h1><a href="/urls">TinyApp</a></h1>
+
+<% if (username === undefined) { %>
+  <form method="post" action="/login">
+    <input id="user-login" type="text" name="login">
+    <button>Log in</button>
+  </form>
+<% } else { %>
+  <p>Logged in as: <%= username %></p>
+  <form method="post" action="/logout">
+    <button>Log out</button>
+  </form>
+<% } %>

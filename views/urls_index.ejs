@@ -6,17 +6,18 @@
 
 <body>
   <% include ./partials/_header %>
-  <pre><ul>
+  <pre>
     <% for (var header in urls) { %>
       <% let action = "/urls/" + header + "/delete" %>
-      <li><p>
-        <%= header + "  ----->  "%><a href="<%= urls[header] %>"><%= urls[header] %></a>
-        <a href="/urls/<%= header %>">Edit</a>
+      <p>
+        <%= header + "  ----->  "%><a href="/u/<%= header %>"><%= urls[header] %></a>
         <form method="post" action="/urls/<%= header %>/delete">
-          <button>Delete!</button>
+          <button>Delete</button>
         </form>
-      </p></li>
+        <a href="/urls/<%= header %>"><button>Edit</button></a>
+      </p>
     <% } %>
-  </ul></pre>
+    <h2><a href="/urls/new">Create A New Link!</a></h2>
+ </pre>
 </body>
 </html>
