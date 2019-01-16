@@ -10,6 +10,10 @@
     <p>Short URL: <%= shortURL %></p>
     <p>Long URL: <%= longURL %></p>
   </pre>
+  <form method="post" action="/urls/<%= shortURL %>">
+    <input id="new-url" type="text" name="url">
+    <button>Update!</button>
+  </form>
 
 </body>
 </html>

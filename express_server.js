@@ -43,6 +43,18 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.post("/urls/:id", (req, res) => {
+  let longURL = req.body.url;
+  let shortURL = req.params.id;
+  urlDatabase[shortURL] = longURL;
+  res.redirect(`http://localhost:8080/urls/${shortURL}`);
+});
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("http://localhost:8080/urls/");
+});
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });

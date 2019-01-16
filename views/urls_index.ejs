@@ -6,8 +6,17 @@
 
 <body>
   <% include ./partials/_header %>
-  <ol><pre><%= JSON.stringify(urls, null, 2) %></pre></ol>
-  <a href ='#'>Dead Link</a>
-
+  <pre><ul>
+    <% for (var header in urls) { %>
+      <% let action = "/urls/" + header + "/delete" %>
+      <li><p>
+        <%= header + "  ----->  "%><a href="#"><%= urls[header] %></a>
+        <a href="/urls/<%= header %>">Edit</a>
+        <form method="post" action="/urls/<%= header %>/delete">
+          <button>Delete!</button>
+        </form>
+      </p></li>
+    <% } %>
+  </ul></pre>
 </body>
 </html>
