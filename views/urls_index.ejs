@@ -11,7 +11,7 @@
     <% for (var header in urls) { %>
       <% let action = "/urls/" + header + "/delete" %>
       <p>
-        <%= header + "  ----->  "%><a href="/u/<%= header %>"><%= urls[header] %></a>
+        <a href = "/urls/<%= header %>"><%= `../u/${header}` %></a> -----> <a href="/u/<%= header %>"><%= urls[header] %></a>
         <form method="post" action="/urls/<%= header %>/delete">
           <button>Delete</button>
         </form>
