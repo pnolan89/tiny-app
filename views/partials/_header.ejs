@@ -1,11 +1,7 @@
 <h1><a href="/urls">TinyApp</a></h1>
 
 <% if (user === undefined) { %>
-  <form method="post" action="/login">
-    <input id="user-login" type="text" name="login">
-    <button>Log in</button>
-  </form>
-  <br>
+  <a href = "/login"><button>Login</button></a>
   <a href = "/register"><button>Register</button></a>
 <% } else { %>
   <p>Logged in as: <%= user.id %></p>

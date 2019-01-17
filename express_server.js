@@ -41,7 +41,7 @@ const users = {
    "pnolan89": {
     id: "pnolan89",
     email: "pnolan@example.com",
-    password: "badlunk"
+    password: "123"
   },
 };
 
@@ -50,9 +50,28 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+app.get("/login", (req, res) => {
+  let templateVars = {user: users[req.cookies.userID]};
+  res.render("login", templateVars);
+});
+
 app.post("/login", (req, res) => {
-  res.cookie("userID", req.body.login);
-  res.redirect("/urls");
+  let counter = 0;
+  for (let user in users) {
+    if (users[user].email === req.body.email) {
+      if (users[user].password === req.body.password) {
+        res.cookie("userID", users[user].id);
+        res.redirect("/urls");
+      } else {
+        res.send(`Incorrect password for ${req.body.email}! (Error 403)`);
+      }
+    } else {
+      counter += 1;
+      if (counter === Object.keys(users).length) {
+        res.send("Email not found! (Error 403)");
+      }
+    }
+  }
 });
 
 app.post("/logout", (req, res) => {
@@ -94,8 +113,6 @@ app.get("/urls", (req, res) => {
     user: users[req.cookies.userID]
   };
   res.render("urls_index", templateVars);
-  console.log(req.cookies.userID);
-  console.log(req.cookies.userID);
 });
 
 app.get("/urls/new", (req, res) => {
