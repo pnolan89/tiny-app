@@ -16,21 +16,32 @@
   </div>
       <% for (var header in urls) { %>
       <% let action = "/urls/" + header + "/delete" %>
-      <div>
-          <p>
-            <%= urls[header].longURL %> -----> <a class="blue" href="/u/<%= header %>"><%= `../u/${urls[header].shortURL}` %></a>
-            <br>
-            Created <%= urls[header].date %>
-            <br>
-            Clicks: <%= urls[header].clicks %>
-            <br>
-            Unique Visitors: <%= urls[header].uniqueClicks.length %>
-            <form method="post" action="/urls/<%= header %>/delete">
-              <button>Delete</button>
+      <table id="urlListBox">
+        <tr id= "urlHeader">
+          <td><%= urls[header].longURL %> -----></td>
+          <td><a class="blue" href="/u/<%= header %>"><%= `../u/${urls[header].shortURL}` %></a></td>
+        </tr>
+        <tr>
+          <td id="container">
+           <form method="get" action="/urls/<%= header %>" style="display: inline-block; margin-right: 15px">
+             <button id="editButton">Edit</button>
             </form>
-            <a href="/urls/<%= header %>"><button>Edit</button></a>
-          </p>
-        </div>
+            <form method="post" action="/urls/<%= header %>/delete" style="display: inline-block;">
+              <button id="deleteButton">Delete</button>
+            </form>
+          </td>
+        </tr>
+        <tr>
+            <td>Created:</td>
+            <td><%= urls[header].date %></td>
+        </tr>
+            <td>Clicks: </td>
+            <td><%= urls[header].clicks %></td>
+        <tr>
+            <td>Unique Visitors: </td>
+            <td><%= urls[header].uniqueClicks.length %></td>
+        </tr>
+      </table>
     <% } %>
   <% } %>
 </body>

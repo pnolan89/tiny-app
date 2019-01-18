@@ -234,7 +234,7 @@ app.get("/urls/:id", (req, res) => {
 
 app.post("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
-  urlDatabase[shortURL] = req.body.url;
+  urlDatabase[shortURL].longURL = req.body.url;
   res.redirect(`/urls/${shortURL}`);
 });
 

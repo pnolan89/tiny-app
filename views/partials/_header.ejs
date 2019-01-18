@@ -5,9 +5,9 @@
   <a href = "/login"><button>Login</button></a>
   <a href = "/register"><button>Register</button></a>
 <% } else { %>
-  <p>Logged in as: <%= user.email %></p>
+  <p>Logged in as: <span style="color: green"><%= user.email %></span></p>
   <form method="post" action="/logout">
-    <button>Log out</button>
+    <button id="logoutButton">Log out</button>
   </form>
 <% } %>
 </div>
