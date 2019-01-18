@@ -7,17 +7,35 @@
 
 <body>
   <% include ./partials/_header %>
-  <pre>
-    <p>Short URL: <a href = "/u/<%= shortURL %>">../u/<%= shortURL %></a></p>
-    <p>Long URL: <%= longURL %></p>
-    <p>Created: <%= date %></p>
-    <p>Clicks: <%= clicks %></p>
-    <p>Unique visitors: <%= uniqueClicks %></p>
-  </pre>
+  <table>
+    <tr>
+      <td>Short URL:</td>
+      <td> <a href = "/u/<%= shortURL %>">../u/<%= shortURL %></a></td>
+    </tr>
+    <tr>
+      <td>Long URL:</td>
+      <td><%= longURL %></td>
+    </tr>
+  </table>
   <form method="post" action="/urls/<%= shortURL %>">
-    <input id="new-url" type="text" name="url">
+    <input id="new-url" type="text" name="url" placeholder="Type a new URL here to update this link!">
     <button>Update!</button>
   </form>
+  <table>
+    <tr>
+      <td>Created:</td>
+      <td><%= date %></td>
+    </tr>
+    <tr>
+      <td>Clicks:</td>
+      <td><%= clicks %></td>
+    </tr>
+    <tr>
+      <td>Unique visitors:</td>
+      <td><%= uniqueClicks %></td>
+    </tr>
+  </table>
+
 
 </body>
 </html>
