@@ -4,7 +4,7 @@
   <a href = "/login"><button>Login</button></a>
   <a href = "/register"><button>Register</button></a>
 <% } else { %>
-  <p>Logged in as: <%= user.id %></p>
+  <p>Logged in as: <%= user.email %></p>
   <form method="post" action="/logout">
     <button>Log out</button>
   </form>

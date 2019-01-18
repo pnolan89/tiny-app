@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
 const bcrypt = require('bcrypt');
 const PORT = 8080; // default port 8080
@@ -12,6 +11,11 @@ app.use(cookieSession({
   name: 'session',
   keys: ["20", "dfasd"]
 }));
+
+const today = new Date();
+const dateOptions = {timeZone: 'America/New_York', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+const currentDate = today.toLocaleString("en-US", dateOptions);
+
 
 const generateRandomString = () => {
   return Math.random().toString(36).substring(2, 8);
@@ -31,12 +35,18 @@ const urlDatabase = {
   "b2xVn2": {
     shortURL: "b2xVn2",
     longURL: "http://www.lighthouselabs.ca",
-    user_id: "pnolan89"
+    user_id: "pnolan89",
+    date: "Friday, January 18, 2019",
+    clicks: 5,
+    uniqueClicks: ['pnolan89']
     },
   "9sm5xK": {
     shortURL: "9sm5xK",
     longURL: "http://www.google.com",
-    user_id: "pnolan89"
+    user_id: "pnolan89",
+    date: "Friday, January 18, 2019",
+    clicks: 3,
+    uniqueClicks: ['pnolan89', '123']
     }
 };
 
@@ -74,7 +84,11 @@ const users = {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/login", (req, res) => {
@@ -86,7 +100,6 @@ app.post("/login", (req, res) => {
   let counter = 0;
   for (let user in users) {
     if (users[user].email === req.body.email) {
-      // if (users[user].password === req.body.password)
       if (bcrypt.compareSync(req.body.password, users[user].password)) {
         req.session.user_id = users[user].id;
         res.redirect("/urls");
@@ -142,10 +155,6 @@ app.get("/urls", (req, res) => {
     user: users[req.session.user_id]
   };
   res.render("urls_index", templateVars);
-  console.log(`user: ${bcrypt.hashSync('purple-monkey-dinosaur', 10)}`);
-  console.log(`user2: ${bcrypt.hashSync('dishwasher-funk', 10)}`);
-  console.log(`yaba: ${bcrypt.hashSync('funk', 10)}`);
-  console.log(`ramsay: ${bcrypt.hashSync('dishwasher-reek', 10)}`);
 });
 
 app.post("/urls", (req, res) => {
@@ -153,7 +162,10 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = {
     shortURL: shortURL,
     longURL: req.body.longURL,
-    user_id: req.session.user_id
+    user_id: req.session.user_id,
+    date: currentDate,
+    clicks: 0,
+    uniqueClicks: []
   };
   res.redirect(`/urls/${shortURL}`);
 });
@@ -170,10 +182,23 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  let URL_id = urlDatabase[req.params.id];
+  if (URL_id === undefined) {
+    res.send("Cannot find that short URL! (Error code: 404)");
+  }
+  if (req.session.user_id === undefined) {
+    res.send("You are not logged in! Only the creator of this link can view its details. (Error code: 403)");
+  }
+  if (req.session.user_id !== URL_id.user_id) {
+    res.send("You do not own this URL! Only the creator of this link can view its details. (Error code: 403)")
+  }
   let templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    user: users[req.session.user_id]
+    longURL: URL_id.longURL,
+    user: users[req.session.user_id],
+    date: URL_id.date,
+    clicks: URL_id.clicks,
+    uniqueClicks: URL_id.uniqueClicks.length
   };
   res.render("urls_show", templateVars);
 });
@@ -199,10 +224,32 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
+  let URL_id = urlDatabase[req.params.id];
+  if (URL_id === undefined) {
+    res.send("Cannot find that short URL! (Error code: 404)");
+  }
   let longURL = urlDatabase[req.params.id].longURL;
   longURL = longURL.replace("http://", "");
   longURL = longURL.replace("www.", "");
   res.redirect(`http://www.${longURL}`);
+  urlDatabase[req.params.id].clicks += 1;
+  let uniqueClicks = urlDatabase[req.params.id].uniqueClicks;
+  if (uniqueClicks.length === 0) {
+    urlDatabase[req.params.id].uniqueClicks.push(req.session.user_id);
+  } else {
+    console.log(uniqueClicks[0]);
+    let counter = 0;
+    uniqueClicks.forEach(click => {
+      if (click !== req.session.user_id) {
+        counter += 1;
+      }
+      if (counter === uniqueClicks.length) {
+        urlDatabase[req.params.id].uniqueClicks.push(req.session.user_id);
+      }
+    });
+  }
+  // console.log(req.session.user_id);
+  // console.log(urlDatabase[req.params.id].uniqueClicks);
 });
 
 app.listen(PORT, () => {

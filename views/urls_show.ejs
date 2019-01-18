@@ -7,8 +7,11 @@
 <body>
   <% include ./partials/_header %>
   <pre>
-    <p>Short URL: <%= shortURL %></p>
-    <p>Long URL: <a href = "/u/<%= shortURL %>"><%= longURL %></a></p>
+    <p>Short URL: <a href = "/u/<%= shortURL %>">../u/<%= shortURL %></a></p>
+    <p>Long URL: <%= longURL %></p>
+    <p>Created: <%= date %></p>
+    <p>Clicks: <%= clicks %></p>
+    <p>Unique visitors: <%= uniqueClicks %></p>
   </pre>
   <form method="post" action="/urls/<%= shortURL %>">
     <input id="new-url" type="text" name="url">
