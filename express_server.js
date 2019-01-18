@@ -2,11 +2,16 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
+const bcrypt = require('bcrypt');
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ["20", "dfasd"]
+}));
 
 const generateRandomString = () => {
   return Math.random().toString(36).substring(2, 8);
@@ -15,26 +20,23 @@ const generateRandomString = () => {
 const urlsForUser = (id) => {
   let userURLs = {};
   for (let url in urlDatabase) {
-    if (urlDatabase[url].userID === id) {
+    if (urlDatabase[url].user_id === id) {
       userURLs[url] = urlDatabase[url];
     }
   }
-  console.log(userURLs);
   return userURLs;
 };
-
-
 
 const urlDatabase = {
   "b2xVn2": {
     shortURL: "b2xVn2",
     longURL: "http://www.lighthouselabs.ca",
-    userID: "pnolan89"
+    user_id: "pnolan89"
     },
   "9sm5xK": {
     shortURL: "9sm5xK",
     longURL: "http://www.google.com",
-    userID: "pnolan89"
+    user_id: "pnolan89"
     }
 };
 
@@ -42,42 +44,41 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: "$2b$10$t4Z31raT82PHFEXsjbnU/eeZqNjNHYO7yYyS3WsWE88tGY8Y48sHy"
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: "$2b$10$VrOXt20iPG8F1H6MWdgPjO3ht6t/aSe9uX.rOHliajwvL6nNhJC5W"
   },
   "yabadaba": {
     id: "yabadaba",
     email: "aaaayyyyy@example.com",
-    password: "funk"
+    password: "$2b$10$mZdcUHncA3S8YXHQV9bpQOdfC8plHFld1Qhz/XM.0Hm3xh/XQdjpC"
   },
    "ramsaybolton": {
     id: "ramsaybolton",
     email: "holdsnosecrets.com",
-    password: "dishwasher-reek"
+    password: "$2b$10$nT2vdphMX2m6Rhb.dfmMzepGA.hwWm8RlHD5kTQby7FwqpHt.IHBC"
   },
    "pnolan89": {
     id: "pnolan89",
     email: "pnolan@example.com",
-    password: "123"
+    password: "$2b$10$XQw09CW8vxeuHMs2ymVBs.ekEkgNsuSpKkb0ljBDmBbysBXxEFloa"
   },
     "123": {
     id: "123",
     email: "123@123",
-    password: "123"
+    password: "$2b$10$XQw09CW8vxeuHMs2ymVBs.ekEkgNsuSpKkb0ljBDmBbysBXxEFloa"
   },
 };
-
 
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
 app.get("/login", (req, res) => {
-  let templateVars = {user: users[req.cookies.userID]};
+  let templateVars = {user: users[req.session.user_id]};
   res.render("login", templateVars);
 });
 
@@ -85,28 +86,29 @@ app.post("/login", (req, res) => {
   let counter = 0;
   for (let user in users) {
     if (users[user].email === req.body.email) {
-      if (users[user].password === req.body.password) {
-        res.cookie("userID", users[user].id);
+      // if (users[user].password === req.body.password)
+      if (bcrypt.compareSync(req.body.password, users[user].password)) {
+        req.session.user_id = users[user].id;
         res.redirect("/urls");
       } else {
-        res.send(`Incorrect password for ${req.body.email}! (Error 403)`);
+        res.send(`Incorrect password for ${req.body.email}! (Error code: 403)`);
       }
     } else {
       counter += 1;
       if (counter === Object.keys(users).length) {
-        res.send("Email not found! (Error 403)");
+        res.send("Email not found! (Error code: 403)");
       }
     }
   }
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("userID");
+  req.session = null;
   res.redirect("/urls");
 });
 
 app.get("/register", (req, res) => {
-  let templateVars = {user: users[req.cookies.userID]};
+  let templateVars = {user: users[req.session.user_id]};
   res.render("register", templateVars);
 });
 
@@ -122,23 +124,28 @@ app.post("/register", (req, res) => {
       return;
       }
     }
-    let userID = generateRandomString();
-    users[userID] = {
-      id: userID,
+    let user_id = generateRandomString();
+    let hashedPassword = bcrypt.hashSync(password, 10);
+    users[user_id] = {
+      id: user_id,
       email: email,
-      password: password
+      password: hashedPassword
     };
-    res.cookie("userID", userID);
+    req.session.user_id = user_id;
     res.redirect("/urls");
   }
 });
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlsForUser(req.cookies.userID),
-    user: users[req.cookies.userID]
+    urls: urlsForUser(req.session.user_id),
+    user: users[req.session.user_id]
   };
   res.render("urls_index", templateVars);
+  console.log(`user: ${bcrypt.hashSync('purple-monkey-dinosaur', 10)}`);
+  console.log(`user2: ${bcrypt.hashSync('dishwasher-funk', 10)}`);
+  console.log(`yaba: ${bcrypt.hashSync('funk', 10)}`);
+  console.log(`ramsay: ${bcrypt.hashSync('dishwasher-reek', 10)}`);
 });
 
 app.post("/urls", (req, res) => {
@@ -146,15 +153,15 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = {
     shortURL: shortURL,
     longURL: req.body.longURL,
-    userID: req.cookies.userID
+    user_id: req.session.user_id
   };
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
-  if (req.cookies.userID) {
+  if (req.session.user_id) {
     let templateVars = {
-      user: users[req.cookies.userID]
+      user: users[req.session.user_id]
     };
     res.render("urls_new", templateVars);
   } else {
@@ -166,7 +173,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
-    user: users[req.cookies.userID]
+    user: users[req.session.user_id]
   };
   res.render("urls_show", templateVars);
 });
@@ -179,7 +186,7 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  if (urlDatabase[req.params.id].userID === req.cookies.userID) {
+  if (urlDatabase[req.params.id].user_id === req.session.user_id) {
     delete urlDatabase[req.params.id];
     res.redirect("/urls/");
   } else {
@@ -201,3 +208,5 @@ app.get("/u/:id", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}!`);
 });
+
+
