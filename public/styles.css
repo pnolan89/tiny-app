@@ -1,0 +1,38 @@
+body {
+      margin: 0;
+      font: 15px yatra one, sans-serif;
+      background-color: #f2f2f2;
+    }
+    #header {
+      padding: 15px;
+      width: 100%;
+      background-color: orange;
+      margin-left: 0px;
+      margin-bottom: 15px;
+    }
+    #logo {
+      font-color: darkgrey;
+      font-size: 40px;
+      font-weight: normal;
+      text-decoration: none;
+    }
+    a {
+      text-decoration: none;
+    }
+    h1 {
+      color: grey;;
+    }
+    table {
+      background-color: white;
+      width: 500px;
+      margin-left: 15px;
+      border-collapse: separate;
+      border: 1px solid grey;
+      border-radius: 10px;
+    }
+    td {
+      padding: 15px
+    }
+    input {
+      margin: 30px; width: 390px; height: 25px; font-size: 15px; text-align: center;
+    }
