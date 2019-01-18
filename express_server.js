@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const bcrypt = require('bcrypt');
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -29,6 +29,30 @@ const urlsForUser = (id) => {
     }
   }
   return userURLs;
+};
+
+const formalizeURL = (id) => {
+  let longURL = urlDatabase[id].longURL;
+  longURL = longURL.replace("http://", "");
+  longURL = longURL.replace("www.", "");
+  return `http://www.${longURL}`;
+};
+
+const checkUniqueClick = (id, user_id) => {
+  let uniqueClicks = urlDatabase[id].uniqueClicks;
+  if (uniqueClicks.length === 0) {
+    urlDatabase[id].uniqueClicks.push(user_id);
+  } else {
+    let counter = 0;
+    uniqueClicks.forEach(click => {
+      if (click !== user_id) {
+        counter += 1;
+      }
+      if (counter === uniqueClicks.length) {
+        urlDatabase[id].uniqueClicks.push(user_id);
+      }
+    });
+  }
 };
 
 const urlDatabase = {
@@ -224,32 +248,26 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  let URL_id = urlDatabase[req.params.id];
-  if (URL_id === undefined) {
+  if (urlDatabase[req.params.id] === undefined) {
     res.send("Cannot find that short URL! (Error code: 404)");
   }
-  let longURL = urlDatabase[req.params.id].longURL;
-  longURL = longURL.replace("http://", "");
-  longURL = longURL.replace("www.", "");
-  res.redirect(`http://www.${longURL}`);
+  res.redirect(formalizeURL(req.params.id));
   urlDatabase[req.params.id].clicks += 1;
-  let uniqueClicks = urlDatabase[req.params.id].uniqueClicks;
-  if (uniqueClicks.length === 0) {
-    urlDatabase[req.params.id].uniqueClicks.push(req.session.user_id);
-  } else {
-    console.log(uniqueClicks[0]);
-    let counter = 0;
-    uniqueClicks.forEach(click => {
-      if (click !== req.session.user_id) {
-        counter += 1;
-      }
-      if (counter === uniqueClicks.length) {
-        urlDatabase[req.params.id].uniqueClicks.push(req.session.user_id);
-      }
-    });
-  }
-  // console.log(req.session.user_id);
-  // console.log(urlDatabase[req.params.id].uniqueClicks);
+  checkUniqueClick(req.params.id, req.session.user_id);
+  // let uniqueClicks = urlDatabase[req.params.id].uniqueClicks;
+  // if (uniqueClicks.length === 0) {
+  //   urlDatabase[req.params.id].uniqueClicks.push(req.session.user_id);
+  // } else {
+  //   let counter = 0;
+  //   uniqueClicks.forEach(click => {
+  //     if (click !== req.session.user_id) {
+  //       counter += 1;
+  //     }
+  //     if (counter === uniqueClicks.length) {
+  //       urlDatabase[req.params.id].uniqueClicks.push(req.session.user_id);
+  //     }
+  //   });
+  // }
 });
 
 app.listen(PORT, () => {

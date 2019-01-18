@@ -6,28 +6,29 @@
 
 <body>
   <% include ./partials/_header %>
-  <pre>
-    <% if (user === undefined) { %>
-      <h2>You are not logged in. <a href="/login">Log in now to start shortening links!</a></h2>
-    <% } else { %>
-      <h2><a href="/urls/new">Create A New Link!</a></h2>
+
+  <% if (user === undefined) { %>
+    <h2>You are not logged in. <a href="/login">Log in now to start shortening links!</a></h2>
+  <% } else { %>
+    <h2><a href="/urls/new">Create A New Link!</a></h2>
       <% for (var header in urls) { %>
-        <% let action = "/urls/" + header + "/delete" %>
+      <% let action = "/urls/" + header + "/delete" %>
+      <div>
           <p>
             <%= urls[header].longURL %> -----> <a href="/u/<%= header %>"><%= `../u/${urls[header].shortURL}` %></a>
             <br>
             Created <%= urls[header].date %>
             <br>
-            <%= urls[header].clicks %> clicks
+            Clicks: <%= urls[header].clicks %>
             <br>
-            <%= urls[header].uniqueClicks.length %> unique visitors
+            Unique Visitors: <%= urls[header].uniqueClicks.length %>
             <form method="post" action="/urls/<%= header %>/delete">
               <button>Delete</button>
             </form>
             <a href="/urls/<%= header %>"><button>Edit</button></a>
           </p>
-      <% } %>
+        </div>
     <% } %>
- </pre>
+  <% } %>
 </body>
 </html>
