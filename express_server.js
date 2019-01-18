@@ -21,6 +21,19 @@ const generateRandomString = () => {
   return Math.random().toString(36).substring(2, 8);
 };
 
+const generateShortURL = (longURL, user_id) => {
+  let shortURL = generateRandomString();
+  urlDatabase[shortURL] = {
+    shortURL: shortURL,
+    longURL: longURL,
+    user_id: user_id,
+    date: currentDate,
+    clicks: 0,
+    uniqueClicks: []
+  };
+  return shortURL;
+};
+
 const urlsForUser = (id) => {
   let userURLs = {};
   for (let url in urlDatabase) {
@@ -182,16 +195,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
-  urlDatabase[shortURL] = {
-    shortURL: shortURL,
-    longURL: req.body.longURL,
-    user_id: req.session.user_id,
-    date: currentDate,
-    clicks: 0,
-    uniqueClicks: []
-  };
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/urls/${generateShortURL(req.body.longURL, req.session.user_id)}`);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -214,7 +218,7 @@ app.get("/urls/:id", (req, res) => {
     res.send("You are not logged in! Only the creator of this link can view its details. (Error code: 403)");
   }
   if (req.session.user_id !== URL_id.user_id) {
-    res.send("You do not own this URL! Only the creator of this link can view its details. (Error code: 403)")
+    res.send("You do not own this URL! Only the creator of this link can view its details. (Error code: 403)");
   }
   let templateVars = {
     shortURL: req.params.id,
@@ -228,9 +232,8 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  let longURL = req.body.url;
   let shortURL = req.params.id;
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = req.body.url;
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -243,10 +246,6 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
 app.get("/u/:id", (req, res) => {
   if (urlDatabase[req.params.id] === undefined) {
     res.send("Cannot find that short URL! (Error code: 404)");
@@ -254,20 +253,6 @@ app.get("/u/:id", (req, res) => {
   res.redirect(formalizeURL(req.params.id));
   urlDatabase[req.params.id].clicks += 1;
   checkUniqueClick(req.params.id, req.session.user_id);
-  // let uniqueClicks = urlDatabase[req.params.id].uniqueClicks;
-  // if (uniqueClicks.length === 0) {
-  //   urlDatabase[req.params.id].uniqueClicks.push(req.session.user_id);
-  // } else {
-  //   let counter = 0;
-  //   uniqueClicks.forEach(click => {
-  //     if (click !== req.session.user_id) {
-  //       counter += 1;
-  //     }
-  //     if (counter === uniqueClicks.length) {
-  //       urlDatabase[req.params.id].uniqueClicks.push(req.session.user_id);
-  //     }
-  //   });
-  // }
 });
 
 app.listen(PORT, () => {
