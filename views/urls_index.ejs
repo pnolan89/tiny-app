@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="../styles.css" >
 <head>
   <title>TinyApp</title>
+  <link rel="stylesheet" href="../styles.css" >
 </head>
 <body>
   <% include ./partials/_header %>
@@ -14,7 +14,7 @@
       <button id="createNewLink" type="submit">Create A New Link!</button>
     </form>
   </div>
-      <% for (var header in urls) { %>
+    <% for (var header in urls) { %>
       <% let action = "/urls/" + header + "/delete" %>
       <table id="urlListBox">
         <tr id= "urlHeader">

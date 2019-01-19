@@ -1,13 +1,12 @@
 <div id="header">
-<h1 id="logo"><a href="/urls">TinyApp</a></h1>
-
-<% if (user === undefined) { %>
-  <a href = "/login"><button class="loginButton">Login</button></a>
-  <a href = "/register"><button class="loginButton">Register</button></a>
-<% } else { %>
-  <p>Logged in as: <span style="color: green"><%= user.email %></span></p>
-  <form method="post" action="/logout">
-    <button class="loginButton">Log out</button>
-  </form>
-<% } %>
+  <h1 id="logo"><a href="/urls">TinyApp</a></h1>
+  <% if (user === undefined) { %>
+    <a href = "/login"><button class="loginButton">Login</button></a>
+    <a href = "/register"><button class="loginButton">Register</button></a>
+  <% } else { %>
+    <p>Logged in as: <span style="color: green"><%= user.email %></span></p>
+    <form method="post" action="/logout">
+      <button class="loginButton">Log out</button>
+    </form>
+  <% } %>
 </div>

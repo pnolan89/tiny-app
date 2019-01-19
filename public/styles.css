@@ -43,6 +43,10 @@ body {
   border-color: grey;
 }
 
+#loginTable: {
+  padding: 0;
+}
+
 .blue {
   color: blue;
 }

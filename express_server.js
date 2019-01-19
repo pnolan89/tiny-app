@@ -14,7 +14,7 @@ app.use(cookieSession({
 }));
 
 const today = new Date();
-const dateOptions = {timeZone: 'America/New_York', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+const dateOptions = {timeZone: 'America/Ensenada', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
 const currentDate = today.toLocaleString("en-US", dateOptions);
 
 
@@ -22,6 +22,7 @@ const generateRandomString = () => {
   return Math.random().toString(36).substring(2, 8);
 };
 
+// Generates and adds a new short URL with properties to the database. Returns the link's ID.
 const generateShortURL = (longURL, user_id) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = {
@@ -35,6 +36,7 @@ const generateShortURL = (longURL, user_id) => {
   return shortURL;
 };
 
+//Finds and returns any links owned by current user
 const urlsForUser = (id) => {
   let userURLs = {};
   for (let url in urlDatabase) {
@@ -45,6 +47,7 @@ const urlsForUser = (id) => {
   return userURLs;
 };
 
+//Standardizes URL format, in case users don't type 'http://' or 'www'
 const formalizeURL = (id) => {
   let longURL = urlDatabase[id].longURL;
   longURL = longURL.replace("http://", "");
@@ -52,6 +55,7 @@ const formalizeURL = (id) => {
   return `http://www.${longURL}`;
 };
 
+//Checks whether a logged-in user has clicked a link, to add to the link's "Unique clicks" counter
 const checkUniqueClick = (id, user_id) => {
   let uniqueClicks = urlDatabase[id].uniqueClicks;
   if (uniqueClicks.length === 0) {
@@ -82,7 +86,7 @@ const urlDatabase = {
     shortURL: "9sm5xK",
     longURL: "http://www.google.com",
     user_id: "pnolan89",
-    date: "Friday, January 18, 2019",
+    date: "Thursday, January 17, 2019",
     clicks: 3,
     uniqueClicks: ['pnolan89', '123']
     }
