@@ -172,7 +172,7 @@ app.put("/login", (req, res) => {
   }
 });
 
-app.put("/logout", (req, res) => {
+app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
