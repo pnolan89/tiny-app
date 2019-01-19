@@ -8,7 +8,7 @@
   <% include ./partials/_header %>
   <div>
   <% if (user === undefined) { %>
-    <h2>You are not logged in. <a href="/login">Log in now to start shortening links!</a></h2>
+    <h2>You are not logged in. <a href="/login" class="blue">Log in now to start shortening links!</a></h2>
   <% } else { %>
     <form method="get" action="/urls/new">
       <button id="createNewLink" type="submit">Create A New Link!</button>

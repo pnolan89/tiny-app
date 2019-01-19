@@ -4,6 +4,11 @@ body {
       color: #262626;
       background-color: #fffcfc;
     }
+
+.title {
+  margin-left: 15px;
+}
+
 #header {
   padding: 15px;
   width: 100%;
@@ -11,17 +16,31 @@ body {
   margin-left: 0px;
   margin-bottom: 15px;
 }
+
 #logo {
   color: #262626;
   font-size: 40px;
-  font-weight: normal;
+  font-weight: bold;
   text-decoration: none;
 }
 
-#logoutButton {
+.loginButton {
   width: 80px;
   height: 30px;
   font-size: 12px;
+}
+
+.loginSubmit {
+  margin: 15px;
+  width: 500px;
+  height: 50px;
+  font-size: 20px;
+}
+
+.loginButton:hover {
+  background-color: grey;
+  color: white;
+  border-color: grey;
 }
 
 .blue {
@@ -35,12 +54,19 @@ body {
   font-size: 20px;
 }
 
-#createNewLink:hover {
-  width: 500px;
-  height: 50px;
-  border-radius: 10px;
-  font-size: 20px;
-  background-color: #4CAF50; /* Green */
+#newSubmit {
+  width: 150px;
+  height: 35px;
+  font-size: 15px;
+}
+
+#updateURL {
+  width:80px;
+  height: 30px;
+}
+
+#createNewLink:hover, #newSubmit:hover, #updateURL:hover, .loginSubmit:hover {
+  background-color: #4CAF50;
   color: white;
 }
 
@@ -83,9 +109,11 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
 h1 {
-  color: grey;;
+  color: #262626;
 }
+
 table {
   background-color: white;
   width: 500px;
@@ -95,12 +123,15 @@ table {
   border-radius: 10px;
   border-color: lightgrey;
 }
+
 td {
   padding: 15px
 }
+
 input {
   margin: 30px; width: 390px; height: 25px; font-size: 15px; text-align: center;
 }
+
 button {
   border-radius: 10px;
 }

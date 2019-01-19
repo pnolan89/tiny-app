@@ -130,6 +130,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  }
   let templateVars = {user: users[req.session.user_id]};
   res.render("login", templateVars);
 });
@@ -159,6 +162,9 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  }
   let templateVars = {user: users[req.session.user_id]};
   res.render("register", templateVars);
 });
@@ -196,6 +202,9 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  if (req.session.user_id === false) {
+    res.send("You are not logged in! Only logged-in users can create new links.");
+  }
   res.redirect(`/urls/${generateShortURL(req.body.longURL, req.session.user_id)}`);
 });
 
@@ -235,10 +244,13 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
   urlDatabase[shortURL].longURL = req.body.url;
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/urls/`);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  if (req.session.user_id === false) {
+    res.send("You are not logged in! Only logged-in users can delete links.");
+  }
   if (urlDatabase[req.params.id].user_id === req.session.user_id) {
     delete urlDatabase[req.params.id];
     res.redirect("/urls/");
@@ -250,6 +262,9 @@ app.post("/urls/:id/delete", (req, res) => {
 app.get("/u/:id", (req, res) => {
   if (urlDatabase[req.params.id] === undefined) {
     res.send("Cannot find that short URL! (Error code: 404)");
+  }
+  if (urlDatabase[req.params.id].longURL === "") {
+    res.send("There doesn't seem to be a full URL assigned to this short link! (Error code: 404)");
   }
   res.redirect(formalizeURL(req.params.id));
   urlDatabase[req.params.id].clicks += 1;

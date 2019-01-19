@@ -7,14 +7,27 @@
 
 <body>
   <% include ./partials/_header %>
-  <form action="/register" method="POST" style="margin:150px;">
-      <label for="email">Enter your email:</label>
-      <input id="email" type="email" name="email" placeholder="example@gmail.com" style="width: 300px">
-      <br><br>
-      <label for="password">Create a password:</label>
-      <input id="password" type="password" name="password" style="width: 300px">
-      <br><br>
-      <input type="submit" class="button" value="Submit">
+  <h1 class="title">Register</h1>
+  <table style="width: 700px">
+    <tr>
+      <td>
+        <form action="/register" method="POST">
+        Enter your email:
+      </td>
+      <td>
+        <input id="email" type="email" name="email" placeholder="example@gmail.com" style="width: 400px">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Create a password:
+      </td>
+      <td>
+      <input id="password" type="password" name="password" style="width: 400px">
+      </td>
+    </tr>
+  </table>
+      <button type="submit" class="loginSubmit" style="width: 700px">Submit</button>
     </form>
 </body>
 </html>
