@@ -3,11 +3,13 @@ const app = express();
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const bcrypt = require('bcrypt');
+const methodOverride = require('method-override');
 const PORT = 8080;
 
 app.set("view engine", "ejs");
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(methodOverride('_method'));
 app.use(cookieSession({
   name: 'session',
   keys: ["20", "dfasd"]
@@ -31,7 +33,8 @@ const generateShortURL = (longURL, user_id) => {
     user_id: user_id,
     date: currentDate,
     clicks: 0,
-    uniqueClicks: []
+    uniqueClicks: [],
+    visits: {}
   };
   return shortURL;
 };
@@ -73,6 +76,15 @@ const checkUniqueClick = (id, user_id) => {
   }
 };
 
+//Adds a visitor ID and timestamp to a URL when its short link is clicked.
+const addVistorTimestamp = (id, user_id) => {
+  let visitList = urlDatabase[id].visits;
+  let visit_id = generateRandomString();
+  visitList[visit_id] = {name: user_id, date: currentDate};
+  // visitList[visit_id].date = currentDate;
+  console.log(visitList[visit_id]);
+};
+
 const urlDatabase = {
   "b2xVn2": {
     shortURL: "b2xVn2",
@@ -80,7 +92,8 @@ const urlDatabase = {
     user_id: "pnolan89",
     date: "Friday, January 18, 2019",
     clicks: 5,
-    uniqueClicks: ['pnolan89']
+    uniqueClicks: ['pnolan89'],
+    visits: {}
     },
   "9sm5xK": {
     shortURL: "9sm5xK",
@@ -88,7 +101,8 @@ const urlDatabase = {
     user_id: "pnolan89",
     date: "Thursday, January 17, 2019",
     clicks: 3,
-    uniqueClicks: ['pnolan89', '123']
+    uniqueClicks: ['pnolan89', '123'],
+    visits: {}
     }
 };
 
@@ -141,7 +155,7 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 });
 
-app.post("/login", (req, res) => {
+app.put("/login", (req, res) => {
   let counter = 0;
   for (let user in users) {
     if (users[user].email === req.body.email) {
@@ -160,7 +174,7 @@ app.post("/login", (req, res) => {
   }
 });
 
-app.post("/logout", (req, res) => {
+app.put("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
@@ -240,18 +254,19 @@ app.get("/urls/:id", (req, res) => {
     user: users[req.session.user_id],
     date: URL_id.date,
     clicks: URL_id.clicks,
-    uniqueClicks: URL_id.uniqueClicks.length
+    uniqueClicks: URL_id.uniqueClicks.length,
+    visits: URL_id.visits
   };
   res.render("urls_show", templateVars);
 });
 
-app.post("/urls/:id", (req, res) => {
+app.put("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
   urlDatabase[shortURL].longURL = req.body.url;
   res.redirect(`/urls/`);
 });
 
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id/delete", (req, res) => {
   if (req.session.user_id === false) {
     res.send("You are not logged in! Only logged-in users can delete links.");
   }
@@ -273,6 +288,7 @@ app.get("/u/:id", (req, res) => {
   res.redirect(formalizeURL(req.params.id));
   urlDatabase[req.params.id].clicks += 1;
   checkUniqueClick(req.params.id, req.session.user_id);
+  addVistorTimestamp(req.params.id, req.session.user_id);
 });
 
 app.listen(PORT, () => {

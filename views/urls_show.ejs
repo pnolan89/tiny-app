@@ -9,7 +9,7 @@
   <% include ./partials/_header %>
   <table>
     <tr>
-      <td>Short URL:</td>
+      <td style="font-size: 20px">Your shortened URL:</td>
       <td> <a href = "/u/<%= shortURL %>" class="blue">../u/<%= shortURL %></a></td>
     </tr>
     <tr>
@@ -17,11 +17,14 @@
       <td><%= longURL %></td>
     </tr>
   </table>
-  <form method="post" action="/urls/<%= shortURL %>">
+  <form method="post" action="/urls/<%= shortURL %>?_method=PUT">
     <input id="new-url" type="text" name="url" placeholder="Type a new URL here to update this link!">
     <button id="updateURL">Update!</button>
   </form>
-  <table>
+  <table style="margin-bottom: 30px">
+    <tr>
+      <td style="font-size: 20px">Stats:</td>
+    </tr>
     <tr>
       <td>Created:</td>
       <td><%= date %></td>
@@ -34,6 +37,17 @@
       <td>Unique visitors:</td>
       <td><%= uniqueClicks %></td>
     </tr>
+  </table>
+  <table>
+    <tr>
+      <td style="font-size: 20px">Recent visitors:</td>
+    </tr>
+    <% for (let visit in visits) { %>
+    <tr>
+      <td><%= visits[visit].name %> clicked on:</td>
+      <td><%= visits[visit].date %></td>
+    </td>
+    <% } %>
   </table>
 
 
