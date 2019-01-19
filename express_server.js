@@ -81,8 +81,6 @@ const addVistorTimestamp = (id, user_id) => {
   let visitList = urlDatabase[id].visits;
   let visit_id = generateRandomString();
   visitList[visit_id] = {name: user_id, date: currentDate};
-  // visitList[visit_id].date = currentDate;
-  console.log(visitList[visit_id]);
 };
 
 const urlDatabase = {
